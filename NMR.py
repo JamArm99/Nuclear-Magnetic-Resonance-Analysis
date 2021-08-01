@@ -52,7 +52,7 @@ plt.ylabel('r [nm]', fontsize = fnt)
 plt.minorticks_on()
 plt.tick_params(labelsize = fnt)
 plt.legend(fontsize = fnt, loc = 'upper right', facecolor = 'white', framealpha=1)#Setting legend params
-plt.savefig('images_NMR_Q2/1_1.png')#Saving as Question 1 part 1
+plt.savefig('images_NMR_Q1/1_1.png')#Saving as Question 1 part 1
 plt.close()#Close this image
 
 #Question 1(2) - Dependence of magnetic field components Bx and By on radius (constant theta)
@@ -86,109 +86,62 @@ for i in range(1,3):# x and y components (1 and 2)
     plt.savefig(f'images_NMR_Q1/1_2{i}.png')#Saving image in question 1
     plt.close()#Close this image
 
-#--------------------------------------------------------------------------------------------#
 #Question 2(1) - Solving the Bloch equations in the rotating frame of reference numerically (iterating with time step)
 
-M_0 = 1.4e-6#Initial magnetisation
+M_0 = 1.4e-6#Initial magnetisation defined by system characteristics
 
-#Select 3 different magnetic fields perpendicular to z-axis
-Mx, My, Mz, time = func_NMR.Mag(1e-7)
-Mx1, My1, Mz1, time1 = func_NMR.Mag(1e-8)
-Mx2, My2, Mz2, time2 = func_NMR.Mag(1e-9)
+#Select 3 different magnetic fields perpendicular to z-axis with maximum time 1 second
+array = [func_NMR.Mag(1e-7,0.001,10,0.001),func_NMR.Mag(1e-8,0.001,10,0.001),func_NMR.Mag(1e-9,0.001,10,0.001)]
+
+labels_21 = ['100 nT','10 nT','1 nT']
+colours_21 = ['red', 'blue', 'green']
 
 #Plotting each magnetisation component
-fig, ax = plt.subplots(figsize = (10,8))
-ax.set_xscale('log')
-plt.plot(time, np.array(Mx)/M_0, label = '100 nT', color = 'red')
-plt.plot(time1, np.array(Mx1)/M_0, label = '10 nT', color = 'blue')
-plt.plot(time2, np.array(Mx2)/M_0, label = '1 nT', color = 'green')
-plt.xlabel(r' Time [s]', fontsize = fnt)
-plt.ylabel("M$_{x'}$ [Am$^{-1}$]", fontsize = fnt)
-plt.minorticks_on()
-ax.yaxis.set_major_formatter(tick.FormatStrFormatter('%g M$_0$'))
-plt.tick_params(labelsize = fnt)
-plt.legend(fontsize = fnt, loc = 'best', title = r'B$_1$ Values :', title_fontsize = fnt)
-plt.savefig('2_11.png')
-plt.show()
+for i in range(0,len(array)):
+    fig, ax = plt.subplots(figsize = (10,8))
+    ax.set_xscale('log')#Log time axis
+    for j in range(0,len(array[i])-1):
+        plt.plot(array[j][-1], np.array(array[j][i])/M_0, label = labels_21[j], color = colours_21[j])
+    plt.minorticks_on()
+    ax.yaxis.set_major_formatter(tick.FormatStrFormatter('%g M$_0$'))
+    plt.tick_params(labelsize = fnt)
+    plt.legend(fontsize = fnt, loc = 'best', title = r'B$_1$ Values :', title_fontsize = fnt)
+    plt.xlabel(r' Time [s]', fontsize = fnt)
+    if i == 0:
+        plt.ylabel("M$_{x'}$ [Am$^{-1}$]", fontsize = fnt)
+    elif i == 1:
+        plt.ylabel("M$_{y'}$ [Am$^{-1}$]", fontsize = fnt)
+    else:
+        plt.ylabel("M$_{z'}$ [Am$^{-1}$]", fontsize = fnt)
+    plt.savefig(f'images_NMR_Q2/2_1{i+1}.png')
+    plt.close()#Close this image
 
-fig, ax = plt.subplots(figsize = (10,8))
-ax.set_xscale('log')
-plt.plot(time, np.array(My)/M_0, label = '100 nT', color = 'red')
-plt.plot(time1, np.array(My1)/M_0, label = '10 nT', color = 'blue')
-plt.plot(time2, np.array(My2)/M_0, label = '1 nT', color = 'green')
-plt.xlabel(r' Time [s]', fontsize = fnt)
-plt.ylabel("M$_{y'}$ [Am$^{-1}$]", fontsize = fnt)
-plt.minorticks_on()
-ax.yaxis.set_major_formatter(tick.FormatStrFormatter('%g M$_0$'))
-ax.yaxis.set_major_locator(tick.MultipleLocator(base = 0.2))
-plt.ylim(0,1)
-plt.tick_params(labelsize = fnt)
-plt.legend(fontsize = fnt, loc = 'best', title = r'B$_1$ Values :', title_fontsize = fnt)
-plt.savefig('2_12.png')
-plt.show()
-
-fig, ax = plt.subplots(figsize = (10,8))
-ax.set_xscale('log')
-plt.plot(time, np.array(Mz)/M_0, label = '100 nT', color = 'red')
-plt.plot(time1, np.array(Mz1)/M_0, label = '10 nT', color = 'blue')
-plt.plot(time2, np.array(Mz2)/M_0, label = '1 nT', color = 'green')
-plt.xlabel(r' Time [s]', fontsize = fnt)
-plt.ylabel("M$_{z'}$ [Am$^{-1}$]", fontsize = fnt)
-plt.minorticks_on()
-ax.yaxis.set_major_formatter(tick.FormatStrFormatter('%g M$_0$'))
-plt.tick_params(labelsize = fnt)
-plt.legend(fontsize = fnt, loc = 'best', title = r'B$_1$ Values :', title_fontsize = fnt)
-plt.savefig('2_13.png')
-plt.show()
-'''
-#--------------------------------------------------------------------------------------------#
 #Question 2(2) - Solving for long time scales and varying transverse magnetic field
 
 B1 = np.linspace(1e-9,1e-6,1000)
 
-Mxinf = []
-Myinf = []
-Mzinf = []
+Minf = [[],[],[]]
 
 for i in B1:
-    Mx, My, Mz, time = Mag(i)
-    Mxinf.append(Mx[-1])
-    Myinf.append(My[-1])
-    Mzinf.append(Mz[-1])
+    Mx, My, Mz, time = func_NMR.Mag(i,0.1,1,0.1)
+    Minf[0].append(Mx[-1])
+    Minf[1].append(My[-1])
+    Minf[2].append(Mz[-1])
 
-#Plotting each magnetisation component at t=infinity
-fig, ax = plt.subplots(figsize = (10,8))
-ax.set_xscale('log')
-plt.plot(B1*1e6, Mxinf, color = 'black')
-plt.xlabel(r' B$_1$ [$\mu$T]', fontsize = fnt)
-plt.ylabel("M$_{x'}(\infty)$ [Am$^{-1}$]", fontsize = fnt)
-plt.minorticks_on()
-plt.tick_params(labelsize = fnt)
-ax.yaxis.set_major_formatter(tick.FormatStrFormatter('%g M$_0$'))
-plt.savefig('2_21.png')
-plt.show()
-
-fig, ax = plt.subplots(figsize = (10,8))
-ax.set_xscale('log')
-plt.plot(B1*1e6, np.array(Mzinf)/M_0, color = 'black')
-plt.xlabel(r' B$_1$ [$\mu$T]', fontsize = fnt)
-plt.ylabel("M$_{z'}(\infty)$ [Am$^{-1}$]", fontsize = fnt)
-plt.minorticks_on()
-ax.yaxis.set_major_formatter(tick.FormatStrFormatter('%g M$_0$'))
-#ax.yaxis.set_major_locator(matplotlib.ticker.MultipleLocator(base = ''))
-plt.tick_params(labelsize = fnt)
-plt.savefig('2_22.png')
-plt.show()
-
-fig, ax = plt.subplots(figsize = (10,8))
-ax.set_xscale('log')
-plt.plot(B1*1e6, np.array(Myinf)/M_0, color = 'black')
-plt.xlabel(r' B$_1$ [$\mu$T]', fontsize = fnt)
-plt.ylabel("M$_{y'}(\infty)$ [Am$^{-1}$]", fontsize = fnt)
-plt.minorticks_on()
-plt.tick_params(labelsize = fnt)
-ax.yaxis.set_major_formatter(tick.FormatStrFormatter('%g M$_0$'))
-ax.yaxis.set_major_locator(tick.MultipleLocator(base = 0.05))
-plt.savefig('2_23.png')
-plt.show()
-'''
+#Plotting each magnetisation component
+for i in range(0,len(Minf)):
+    fig, ax = plt.subplots(figsize = (10,8))
+    ax.set_xscale('log')#Log time axis
+    plt.plot(B1*1e6, np.array(Minf[i])/M_0, color = 'black')
+    plt.minorticks_on()
+    ax.yaxis.set_major_formatter(tick.FormatStrFormatter('%g M$_0$'))
+    plt.tick_params(labelsize = fnt)
+    plt.xlabel(r' B$_1$ [$\mu$T]', fontsize = fnt)
+    if i == 0:
+        plt.ylabel("M$_{x'}(\infty)$ [Am$^{-1}$]", fontsize = fnt)
+    elif i == 1:
+        plt.ylabel("M$_{y'}(\infty)$ [Am$^{-1}$]", fontsize = fnt)
+    else:
+        plt.ylabel("M$_{z'}(\infty)$ [Am$^{-1}$]", fontsize = fnt)
+    plt.savefig(f'images_NMR_Q2/2_2{i+1}.png')
+    plt.close()#Close this image
