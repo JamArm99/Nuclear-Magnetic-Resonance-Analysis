@@ -41,15 +41,18 @@ def by(a,r):
     return B*(np.sin(a))/(r**3)*(3*(np.cos(a))**2 + 1)**0.5*1e6
 
 #Bloch equation function
-def Mag(B1):
+def Mag(B1,T_0,T,step):#Transverse magnetic field, initial time, final time, iteration
     '''
     Function to numerically solve the Bloch equations in the rotating frame of reference for carbon-13 atoms in a static magnetic field of
     10 Tesla aligned along the z-axis. The equilibrium magnetisation is given by the temperature of the system and is defined outside the
-    function.
-
-
-
+    function. Initial parameters are defined inside the function and are given by the context of the problem. Bloch's equations are first
+    order differential equations with time; hence, they are solved by iterating with a time step using a while loop. The function returns the
+    time list and magnetisation components list.
     '''
+    if B1 == 0 or T == 0 or step == 0:
+        raise ValueError('Function arguments are unphysical')
+    else:
+        pass#If B1 is not zero then allow function to proceed
     
     #Initial params
     T1 = 100e-3 #Longitudinal relaxation time
@@ -62,8 +65,7 @@ def Mag(B1):
     Mxi = 0
     Myi= M_0
     time = [] #Time list to append too
-    timei = 0 #Initialise time param for while loop
-    step = 0.0001 #Time step iteration in seconds
+    timei = T_0 #Initialise time param for while loop
     
     Bx = B1 #Rotating frame of refernece 
     By = 0
@@ -75,7 +77,7 @@ def Mag(B1):
     Mz = []
     
     #While loop to solve first order differential equation with time
-    while timei <= 1 :#iterate through to specific time
+    while timei <= T :#iterate through to specific time
         
         timei += step#Increase time by st
         
