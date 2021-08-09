@@ -38,7 +38,7 @@ cd Nuclear-Magnetic-Resonance-Analysis
 
 ### NMR.py
 
-This script conducts the primary analysis. By utilising the functions defined in **_func_NMR.py_**, both questions are calculated. Question one is achieved by using NumPy's linspace function to produced either radial or angular data between defined points. Question two centres around the **_Mag_** function that features a while loop to iterate the time parameter in the differential equations.
+This script conducts the primary analysis. By utilising the functions defined in **_func_NMR.py_**, both questions are calculated. Question one is achieved using NumPy's linspace function to produce radial or angular data between defined points. Question two centres around the **_Mag_** function that features a while loop to iterate the time parameter in the differential equations.
 
 ```bash
 python3 NMR.py
@@ -46,7 +46,7 @@ python3 NMR.py
 
 ### test_NMR.py
 
-This script is designed to run tests on the functions defined in **_func_NMR.py_**. Using unittest, these functions can be tested to ensure the desired result when called upon in the main script.
+This script is designed to run tests on the functions defined in **_func_NMR.py_**. Using unittest, these functions are tested to ensure the desired result when called upon in the main script. The primary test is for unphysical arguments passed to the functions such as zeros. The **_Mag_** function has an additional test to ensure the output lists have the correct dimensionality.
 
 ```bash
 python3 -m unittest test_NMR.py
